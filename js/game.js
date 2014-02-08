@@ -1,7 +1,8 @@
 window.rings = [];
 window.current_ring = 0;
 
-var generatePlace = function (ge, Lat, Lng, name) {
+var generatePlace = function (ge, lat, lng, name) {
+	console.log(name);
 	var checkPoint = ge.createPlacemark('');
 	checkPoint.setName(name);
   var point = ge.createPoint('');

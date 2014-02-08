@@ -5,18 +5,6 @@ var changeSpeed = function (ge, speed) {
 	ge.getOptions().setFlyToSpeed(speed);
 };
 
-var changeZoom = function (ge, multiplier) {
-	var lookAt = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
-	lookAt.setRange(lookAt.getRange() * 2.0);
-	ge.getView().setAbstractView(lookAt);
-};
-
-var changeTilt = function (ge, tilt) {
-	var lookAt = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
-	lookAt.setTilt(lookAt.getTilt() + tilt);
-	ge.getView().setAbstractView(lookAt);
-};
-
 var changeLocation = function (ge, lat, lng) {
 	var lookAt = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
 	lookAt.setLatitude(lat);
@@ -43,8 +31,8 @@ var createCircle = function (ge, centre, radius) {
 	var pi = Math.PI * 2;
 	for (var i = 0; i < steps; i++) {
 		var lat = centre.lat + radius * Math.cos(i / steps * pi);
-		var lng = centre.lng + radius * Math.sin(i / steps * pi);
-		ring.getCoordinates().pushLatLngAlt(lat, lng, 700);
+		var alt = centre.alt + radius + Math.sin(i / steps * pi);
+		ring.getCoordinates().pushLatLngAlt(lat, -121.9, alt);
 	}
 	return ring;
 }
@@ -58,3 +46,34 @@ var createBoundary = function (ge, points) {
 	}
 	return boundary;
 }
+
+
+var generateRings = function (ge) {
+
+};
+
+var initializeGame = function (ge) {
+	var lookAt = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
+	lookAt.setLatitude(48.7);
+	lookAt.setLongitude(-121.754322);
+	lookAt.setRange(lookAt.getRange() * 0.0005);
+	lookAt.setTilt(60.0);
+	ge.getView().setAbstractView(lookAt);
+	// var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
+	// camera.setRoll(60.0);
+	// ge.getView().setAbstractView(camera);
+	// Create a stack of rings
+	// Display the current ring
+	// Display arrow pointing towards current ring
+	var speed = 3.0;
+	var default_speed_multiplier = 0.0025;
+	// var gameloop = setInterval(function () {
+	// 	// All event listeners for kinect are added here
+	// 	// Get the camera moving
+	// 	var camera = ge.getView().copyAsCamera(ge.ALTITUDE_RELATIVE_TO_GROUND);
+	// 	var roll = camera.getRoll();
+	// 	console.log(roll);
+	// 	// moveCamera(ge, { lat: default_speed_multiplier * Math.sin(Math.PI * roll / 180), lng: default_speed_multiplier * Math.sin(Math.PI * roll / 180), zoom: 0 });
+	// 	// Detect whether ring co-ordinates similar to current
+	// }, 1000);
+};

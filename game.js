@@ -48,7 +48,23 @@ var createBoundary = function (ge, points) {
 }
 
 
-var generateRings = function (ge) {
+var generateCheckpoints = function (ge,lat,lng,alt) {
+	ge.getWindow().setVisibility(true);
+    ge.getNavigationControl().setVisibility(ge.VISIBILITY_SHOW);
+    var checkPoint = ge.createPlacemark('');
+    var icon = ge.createIcon('');
+    	icon.setHref('icon.png');
+    var style = ge.createStyle('');
+		style.getIconStyle().setIcon(icon);
+		checkPoint.setStyleSelector(style);
+    var point = ge.createPoint('');
+    point.setLatitude(lat);
+    point.setLongitude(lng);
+    point.setAltitudeMode(ge.ALTITUDE_ABSOLUTE);
+    point.setAltitude(alt);
+    checkPoint.setGeometry(point);
+    checkPoint.setName("Catch It baby");
+    ge.getFeatures().appendChild(checkPoint);
 
 };
 

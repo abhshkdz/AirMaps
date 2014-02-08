@@ -13,11 +13,18 @@ namespace Kinect.Server
     class Program
     {
         //static List<IWebSocketConnection> _clients = new List<IWebSocketConnection>();
-        protected static ConcurrentDictionary<string,UserContext> OnlineConnections ;
+        protected static ConcurrentDictionary<string,UserContext> OnlineConnections = new ConcurrentDictionary<string, UserContext>();
         static UserContext connecter = null;
         static bool _serverInitialized = false;
 
         static Skeleton[] _skeletons = new Skeleton[6];
+        
+        double walkThresh = 0.1;
+        double runThresh = 0.5;
+        double turnSlowThresh = 0.08;
+        double turnFastThresh = 0.2;
+        double armTurnThresh = 0.3;
+        double JetPackThresh = 0.06;
 
         static void Main(string[] args)
         {
@@ -53,7 +60,12 @@ namespace Kinect.Server
            // var conn = new Connection { Context = aContext };
 
             // Add a connection Object to thread-safe collection
-            
+            /*for (int i = 0; i < 100; i++)
+            */
+            {
+                aContext.Send("");
+            }/* */
+             
             OnlineConnections.TryAdd(aContext.ClientAddress.ToString(), aContext);
             //connecter = aContext;
         }
@@ -115,6 +127,73 @@ namespace Kinect.Server
             }
         }
 
+        static void processSkeletonFrame(Skeleton skeleton)
+        {
+            // Get Skeleton Data
+            Joint head = skeleton.Joints[JointType.Head];
+            Joint rightShoulder = skeleton.Joints[JointType.ShoulderRight];
+            Joint leftShoulder = skeleton.Joints[JointType.ShoulderLeft];
+            Joint rightHand = skeleton.Joints[JointType.HandRight];
+            Joint rightElbow = skeleton.Joints[JointType.ElbowRight];
+            Joint leftHand = skeleton.Joints[JointType.HandLeft];
+            Joint leftElbow = skeleton.Joints[JointType.ElbowLeft];
+            Joint rightFoot = skeleton.Joints[JointType.FootRight];
+            Joint leftFoot = skeleton.Joints[JointType.FootLeft];
+            Joint centerShoulder = skeleton.Joints[JointType.ShoulderCenter];
+
+            // Detect gestures
+            detectWalking(rightFoot, leftFoot);
+            detectShoulderTurning(rightShoulder, leftShoulder);
+            //detectJetPackUp(rightHand, rightElbow, rightShoulder, leftHand, leftElbow, leftShoulder);
+            //detectBirdwatcher(head, rightHand, rightElbow, rightShoulder);
+        }
+
+        private void detectShoulderTurning(Joint rightShoulder, Joint leftShoulder)
+        {
+            double shoulderDepthDifferential = leftShoulder.Position.Z - rightShoulder.Position.Z;
+
+            if (shoulderDepthDifferential > turnSlowThresh)
+            {
+                //TURN LEFT
+                //foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
+                //{
+                //    item.Value.Send(json);
+                //}
+                Console.WriteLine("LEFT!");
+            }
+            else if (shoulderDepthDifferential < -turnSlowThresh)
+            {
+                //TURN RIGHT
+                Console.WriteLine("RIGHT!");
+            }
+            else
+            {
+                Console.WriteLine("STOP!");
+            }
+        }
+
+        private void detectWalking(Joint rightFoot, Joint leftFoot)
+        {
+
+            double feetDifferential = leftFoot.Position.Z - rightFoot.Position.Z;
+
+            // Move forward
+            if (feetDifferential > walkThresh)
+            {
+                Console.WriteLine("FORWRD!");
+
+            }
+            // Move backward
+            else if (feetDifferential < -walkThresh)
+            {
+                Console.WriteLine("BACKWARD!");
+            }
+            else
+            {
+                Console.WriteLine("STOP!");
+            }
+        }
+
         static void Sensor_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
         {
             if (!_serverInitialized) return;
@@ -138,15 +217,20 @@ namespace Kinect.Server
                     if (users.Count > 0)
                     {
                         string json = users.Serialize();
-                        foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
-                        {
-                            item.Value.Send(json);
-                        }
-                        
 
+                        foreach (var skeleton in users)
+                        {
+                            processSkeletonFrame(skeleton);
+                        }
+
+                        //foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
+                        //{
+                        //    item.Value.Send(json);
+                        //}
                     }
                 }
             }
         }
     }
 }
+

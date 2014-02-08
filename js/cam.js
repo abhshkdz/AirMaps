@@ -1,48 +1,29 @@
-// firstpersoncam.js
-/*
-Copyright 2008 Google Inc.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
-// Code for a simple quake-style camera.
-//
-// Notes: This is a very simple camera and intended to be so. The 
-// camera's altitude is always 0, relative to the surface of the
-// earth.
-//
-
-//----------------------------------------------------------------------------
-// Global Variables
-//----------------------------------------------------------------------------
-
 turnLeft = false;
 turnRight = false;
 tiltUp = false;
 tiltDown = false;
 
-moveForward = false;
+moveForward = true;
 moveBackward = false;
 strafeLeft = false;
 strafeRight = false;
 altitudeUp = false;
 altitudeDown = false;
-
-INITIAL_CAMERA_ALTITUDE = 1.7; // Roughly 6 feet tall
+speeds = {
+  turnSpeed: 60.0,
+  tiltSpeed: 60.0,
+  strafeVelocity: 30.0,
+  forwardVelocity: 100
+}; 
+INITIAL_CAMERA_ALTITUDE = 200; // Roughly 6 feet tall
 cameraAltitude = INITIAL_CAMERA_ALTITUDE;
-//----------------------------------------------------------------------------
-// Utility Functions
-//----------------------------------------------------------------------------
+
+function changeSpeed(multiplier) {
+  speeds.turnSpeed *= multiplier;
+  speeds.tiltSpeed *= multiplier;
+  speeds.strafeVelocity *= multiplier;
+  speeds.forwardVelocity *= multiplier;
+}
 
 // Keep an angle in [-180,180]
 function fixAngle(a) {
@@ -54,10 +35,6 @@ function fixAngle(a) {
   }
   return a;
 }
-
-//----------------------------------------------------------------------------
-// Input Handlers
-//----------------------------------------------------------------------------
 
 function keyDown(event) {
   if (!event) {
@@ -91,11 +68,10 @@ function keyDown(event) {
     event.returnValue = false;
   } else if (event.keyCode == 87 || 
              event.keyCode == 119) {  // Move Forward.
-    moveForward = true;    
+    moveForward = true;
     event.returnValue = false;    
   } else if (event.keyCode == 83 || 
              event.keyCode == 115) {  // Move Forward.
-    moveBackward = true;     
   } else {
     return true;
   }
@@ -134,7 +110,6 @@ function keyUp(event) {
     event.returnValue = false;
   } else if (event.keyCode == 87 || 
              event.keyCode == 119) {  // Move Forward.
-    moveForward = false;    
     event.returnValue = false;    
   } else if (event.keyCode == 83 || 
              event.keyCode == 115) {  // Move Forward.
@@ -149,13 +124,13 @@ function keyUp(event) {
 // JSObject - FirstPersonCamera
 //----------------------------------------------------------------------------
 
-function FirstPersonCam() {
+function FirstPersonCam(lat, lng) {
   var me = this;
  
   // The anchor point is where the camera is situated at. We store
   // the current position in lat, lon, altitude and in cartesian 
   // coordinates.
-  me.localAnchorLla = [37.79333, -122.40, 0];  // San Francisco
+  me.localAnchorLla = [lat, lng, 0];  // San Francisco
   me.localAnchorCartesian = V3.latLonAltToCartesian(me.localAnchorLla);
 
   // Heading, tilt angle is relative to local frame
@@ -183,13 +158,13 @@ FirstPersonCam.prototype.updateOrientation = function(dt) {
 
   // Based on dt and input press, update turn angle.
   if (turnLeft || turnRight) {  
-    var turnSpeed = 60.0; // radians/sec
+    var turnSpeed = speeds.turnSpeed; // radians/sec
     if (turnLeft)
       turnSpeed *= -1.0;
     me.headingAngle += turnSpeed * dt * Math.PI / 180.0;
   }
   if (tiltUp || tiltDown) {
-    var tiltSpeed = 60.0; // radians/sec
+    var tiltSpeed = speeds.tiltSpeed; // radians/sec
     if (tiltDown)
       tiltSpeed *= -1.0;
     me.tiltAngle = me.tiltAngle + tiltSpeed * dt * Math.PI / 180.0;
@@ -203,7 +178,7 @@ FirstPersonCam.prototype.updateOrientation = function(dt) {
   } 
 }
 
-FirstPersonCam.prototype.updatePosition = function(dt) {
+FirstPersonCam.prototype.updatePosition = function(dt, ge) {
   var me = this;
   
   // Convert local lat/lon to a global matrix. The up vector is 
@@ -221,14 +196,14 @@ FirstPersonCam.prototype.updatePosition = function(dt) {
   // Calculate strafe/forwards                              
   var strafe = 0;                             
   if (strafeLeft || strafeRight) {
-    var strafeVelocity = 30;
+    var strafeVelocity = speeds.strafeVelocity;
     if (strafeLeft)
       strafeVelocity *= -1;      
     strafe = strafeVelocity * dt;
   }  
   var forward = 0;                             
   if (moveForward || moveBackward) {
-    var forwardVelocity = 100;
+    var forwardVelocity = speeds.forwardVelocity;
     if (moveBackward)
       forwardVelocity *= -1;      
     forward = forwardVelocity * dt;
@@ -247,14 +222,23 @@ FirstPersonCam.prototype.updatePosition = function(dt) {
                                    V3.scale(rightVec, strafe));
   me.localAnchorCartesian = V3.add(me.localAnchorCartesian, 
                                    V3.scale(headingVec, forward));
-                                                                        
+                                                              
   // Convert cartesian to Lat Lon Altitude for camera setup later on.
   me.localAnchorLla = V3.cartesianToLatLonAlt(me.localAnchorCartesian);
+  if (checkPresence(ge) ) {
+    alert("YO!");
+  } else {
+    // for (var i = 0; i < 3; i++) {
+    //   console.log(me.localAnchorLla[i] - rings[current_ring][i]);
+    // }
+  }
+  // for (var i = 0; i< 3; i++) {
+  //   console.log(me.localAnchorLla[i] - rings[current_ring][i]);
+  // }
 }
 
 FirstPersonCam.prototype.updateCamera = function() {
   var me = this;
-           
   var lla = me.localAnchorLla;
   lla[2] = ge.getGlobe().getGroundAltitude(lla[0], lla[1]); 
   
@@ -281,7 +265,7 @@ FirstPersonCam.prototype.updateCamera = function() {
 FirstPersonCam.prototype.update = function() {
   var me = this;
   
-  ge.getWindow().blur();
+  // ge.getWindow().blur();
   
   // Update delta time (dt in seconds)
   var now = (new Date()).getTime();  
@@ -294,7 +278,7 @@ FirstPersonCam.prototype.update = function() {
   // Update orientation and then position  of camera based
   // on user input   
   me.updateOrientation(dt);
-  me.updatePosition(dt);
+  me.updatePosition(dt, ge);
            
   // Update camera
   me.updateCamera();

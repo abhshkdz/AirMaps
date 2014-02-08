@@ -157,18 +157,18 @@ namespace Kinect.Server
             if (armDepthDifferential > tiltSlowThresh)
             {
                 //LOOK DOWN
-                //foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
-                //{
-                //    item.Value.Send(json);
-                //}
+                foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
+                {
+                    item.Value.Send("event=altitude&direction=down");
+                }
                 Console.WriteLine("LOOK DOWN!");
             }
             else if (armDepthDifferential < -tiltSlowThresh)
             {
-                //foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
-                //{
-                //    item.Value.Send(json);
-                //}
+                foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
+                {
+                    item.Value.Send("event=altitude&direction=up");
+                }
                 Console.WriteLine("LOOK UP!");
             }
             else
@@ -184,15 +184,19 @@ namespace Kinect.Server
             if (shoulderDepthDifferential > turnSlowThresh)
             {
                 //TURN LEFT
-                //foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
-                //{
-                //    item.Value.Send(json);
-                //}
+                foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
+                {
+                    item.Value.Send("event=turn&direction=left");
+                }
                 Console.WriteLine("LEFT!");
             }
             else if (shoulderDepthDifferential < -turnSlowThresh)
             {
                 //TURN RIGHT
+                foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
+                {
+                    item.Value.Send("event=turn&direction=right");
+                }
                 Console.WriteLine("RIGHT!");
             }
             else
@@ -209,11 +213,19 @@ namespace Kinect.Server
             // Move backward
             if (feetDifferential > walkThresh)
             {
+                foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
+                {
+                    item.Value.Send("event=decelerate&multiplier=" + feetDifferential);
+                }
                 Console.WriteLine("BACK!");
             }
             // Move forward
             else if (feetDifferential < -walkThresh)
             {
+                foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
+                {
+                    item.Value.Send("event=accelerate&multiplier=" + (-feetDifferential));
+                }
                 Console.WriteLine("FORWARD!");
             }
             else

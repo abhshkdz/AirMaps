@@ -2,6 +2,8 @@
 <html>
 <head>
 	<title>Hello World!</title>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script src="js/jquery.js"></script>
 	<script src="js/keyboard-focus-hack.js"></script>
@@ -10,9 +12,15 @@
 	<script src="js/maps.js"></script>
 	<script src="js/cam.js"></script>
 	<script src="js/socket.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body onload="init()" onkeydown="return keyDown(event)" onkeyup="return keyUp(event)" id="body" cz-shortcut-listen="true">
-	<div id="map3d"></div>
+	<div id="map3d" style="width:80%;"></div>
+	<div id="data" style="width:20%;">
+		<div id="city"></div>
+		<h2>Tweets from nearby places!</h2>
+		<div id="tweets">Loading...</div>
+	</div> 
 	<script type="text/javascript">
 		google.load("earth", "1");
 		google.load("maps", "2");
@@ -51,6 +59,13 @@
 						  	}
 						  });
 						  cam.updateCamera();
+						  $("#city").text("You are at "+address+" city");
+			        		getTweets(address,function(tweets){
+			        			$("#tweets").text("");
+			        			for(var i in tweets){
+			        				$("#tweets").append("<div class='tweet'>"+tweet[i].text+"</div>");
+			        			}
+			        		})
 			        openConnection();
 						  ge.getWindow().setVisibility(true);
 						  // generateCheckpoint(ge, lat, lng, 100);

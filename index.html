@@ -13,6 +13,7 @@
 </head>
 <body onload="init()" onkeydown="return keyDown(event)" onkeyup="return keyUp(event)" id="body" cz-shortcut-listen="true">
 	<div id="map3d"></div>
+	<div id="street"><h1 class="white-heading">Street view!</h1><br><img id="main-img" src=""></div>
 	<script type="text/javascript">
 		google.load("earth", "1");
 		google.load("maps", "2");
@@ -22,6 +23,9 @@
 
 		function init() {
 			window.adr = 'San Fransisco';
+			window.total_count = 10;
+			window.view = 'earth';
+			window.streetimg = document.getElementById('main-img');
 		  google.earth.createInstance("map3d", initCB, failureCB);
 
 		}

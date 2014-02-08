@@ -15,6 +15,9 @@ speeds = {
   strafeVelocity: 30.0,
   forwardVelocity: 100
 }; 
+
+window.lat = '';
+window.lng = '';
 INITIAL_CAMERA_ALTITUDE = 200; // Roughly 6 feet tall
 cameraAltitude = INITIAL_CAMERA_ALTITUDE;
 
@@ -23,6 +26,15 @@ function changeSpeed(multiplier) {
   speeds.tiltSpeed *= multiplier;
   speeds.strafeVelocity *= multiplier;
   speeds.forwardVelocity *= multiplier;
+}
+
+function initSpeed() {
+  speeds = {
+    turnSpeed: 60.0,
+    tiltSpeed: 60.0,
+    strafeVelocity: 30.0,
+    forwardVelocity: 100
+  };   
 }
 
 // Keep an angle in [-180,180]
@@ -241,10 +253,11 @@ FirstPersonCam.prototype.updatePosition = function(dt, ge) {
                                                               
   // Convert cartesian to Lat Lon Altitude for camera setup later on.
   me.localAnchorLla = V3.cartesianToLatLonAlt(me.localAnchorCartesian);
+  window.lat = me.localAnchorLla[0];
+  window.lng = me.localAnchorLla[1];
   if (checkPresence(me.localAnchorLla[0], me.localAnchorLla[1]) ) {
-    alert("YO!");
-    // console.log("Hello");
     window.current_ring++;
+    generateCheckpoint(ge, window.rings[window.current_ring][0], window.rings[window.current_ring][1], 100);
   } else {
     // for (var i = 0; i < 3; i++) {
       // console.log(me.localAnchorLla[i] - window.rings[window.current_ring][i]);

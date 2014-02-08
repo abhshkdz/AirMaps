@@ -13,7 +13,6 @@
 </head>
 <body onload="init()" onkeydown="return keyDown(event)" onkeyup="return keyUp(event)" id="body" cz-shortcut-listen="true">
 	<div id="map3d"></div>
-	<div id="yo"></div>
 	<script type="text/javascript">
 		google.load("earth", "1");
 		google.load("maps", "2");
@@ -44,6 +43,9 @@
 				  cam = new FirstPersonCam(lat, lng);
 				  console.log(lat);
 				  console.log(lng);
+				  getNearbyPlaces(lat, lng, function (nearby) {
+
+				  });
 				  cam.updateCamera();
 	        // openConnection();
 				  ge.getWindow().setVisibility(true);

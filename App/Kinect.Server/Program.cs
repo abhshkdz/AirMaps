@@ -19,12 +19,13 @@ namespace Kinect.Server
 
         static Skeleton[] _skeletons = new Skeleton[6];
         
-        double walkThresh = 0.1;
-        double runThresh = 0.5;
-        double turnSlowThresh = 0.08;
-        double turnFastThresh = 0.2;
-        double armTurnThresh = 0.3;
-        double JetPackThresh = 0.06;
+        static double walkThresh = 0.1;
+        static double runThresh = 0.5;
+        static double tiltSlowThresh = 0.5;
+        static double turnSlowThresh = 0.08;
+        static double turnFastThresh = 0.2;
+        static double armTurnThresh = 0.3;
+        static double JetPackThresh = 0.06;
 
         static void Main(string[] args)
         {
@@ -144,11 +145,39 @@ namespace Kinect.Server
             // Detect gestures
             detectWalking(rightFoot, leftFoot);
             detectShoulderTurning(rightShoulder, leftShoulder);
+            detectArmMovement(rightHand, rightShoulder);
             //detectJetPackUp(rightHand, rightElbow, rightShoulder, leftHand, leftElbow, leftShoulder);
             //detectBirdwatcher(head, rightHand, rightElbow, rightShoulder);
         }
 
-        private void detectShoulderTurning(Joint rightShoulder, Joint leftShoulder)
+        private static void detectArmMovement(Joint rightHand, Joint rightShoulder)
+        {
+            double armDepthDifferential = rightHand.Position.Z - rightShoulder.Position.Z;
+
+            if (armDepthDifferential > tiltSlowThresh)
+            {
+                //LOOK DOWN
+                //foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
+                //{
+                //    item.Value.Send(json);
+                //}
+                Console.WriteLine("LOOK DOWN!");
+            }
+            else if (armDepthDifferential < -tiltSlowThresh)
+            {
+                //foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
+                //{
+                //    item.Value.Send(json);
+                //}
+                Console.WriteLine("LOOK UP!");
+            }
+            else
+            {
+                Console.WriteLine("STOP!");
+            }
+        }
+
+        private static void detectShoulderTurning(Joint rightShoulder, Joint leftShoulder)
         {
             double shoulderDepthDifferential = leftShoulder.Position.Z - rightShoulder.Position.Z;
 
@@ -172,21 +201,20 @@ namespace Kinect.Server
             }
         }
 
-        private void detectWalking(Joint rightFoot, Joint leftFoot)
+        private static void detectWalking(Joint rightFoot, Joint leftFoot)
         {
 
             double feetDifferential = leftFoot.Position.Z - rightFoot.Position.Z;
 
-            // Move forward
+            // Move backward
             if (feetDifferential > walkThresh)
             {
-                Console.WriteLine("FORWRD!");
-
+                Console.WriteLine("BACK!");
             }
-            // Move backward
+            // Move forward
             else if (feetDifferential < -walkThresh)
             {
-                Console.WriteLine("BACKWARD!");
+                Console.WriteLine("FORWARD!");
             }
             else
             {
@@ -216,6 +244,7 @@ namespace Kinect.Server
 
                     if (users.Count > 0)
                     {
+                        Console.WriteLine("1");
                         string json = users.Serialize();
 
                         foreach (var skeleton in users)
@@ -223,10 +252,10 @@ namespace Kinect.Server
                             processSkeletonFrame(skeleton);
                         }
 
-                        //foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
-                        //{
-                        //    item.Value.Send(json);
-                        //}
+                        foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
+                        {
+                            item.Value.Send(json);
+                        }
                     }
                 }
             }

@@ -42,10 +42,12 @@
 			  	ge.getLayerRoot().enableLayerById(ge.LAYER_TERRAIN, true);
 					createCheckpoints(ge, 10, lat, lng, 0);
 				  cam = new FirstPersonCam(lat, lng);
+				  console.log(lat);
+				  console.log(lng);
 				  cam.updateCamera();
-	        openConnection();
+	        // openConnection();
 				  ge.getWindow().setVisibility(true);
-				  generateCheckpoint(ge, lat, lng, 100);
+				  // generateCheckpoint(ge, lat, lng, 100);
 				  keyboardFocusHack(ge);
 			  }
 			});		  

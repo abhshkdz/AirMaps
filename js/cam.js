@@ -178,6 +178,22 @@ FirstPersonCam.prototype.updateOrientation = function(dt) {
   } 
 }
 
+
+var in_range = function (x, y, flag) {
+  var t = y - x;
+  if (t < 0) { t = -t; }
+  if (flag) {
+    return t < 0.005;   
+  } else {
+    return t < 25;
+  }
+}
+
+var checkPresence = function (lat, lng) {
+  return ( in_range(lat, window.rings[window.current_ring][0], true) && in_range(lng, window.rings[window.current_ring][1], true) );// && in_range(person[2], rings[current_ring][2], false);
+}
+
+
 FirstPersonCam.prototype.updatePosition = function(dt, ge) {
   var me = this;
   
@@ -225,16 +241,15 @@ FirstPersonCam.prototype.updatePosition = function(dt, ge) {
                                                               
   // Convert cartesian to Lat Lon Altitude for camera setup later on.
   me.localAnchorLla = V3.cartesianToLatLonAlt(me.localAnchorCartesian);
-  if (checkPresence(ge) ) {
+  if (checkPresence(me.localAnchorLla[0], me.localAnchorLla[1]) ) {
     alert("YO!");
+    // console.log("Hello");
+    window.current_ring++;
   } else {
     // for (var i = 0; i < 3; i++) {
-    //   console.log(me.localAnchorLla[i] - rings[current_ring][i]);
+      // console.log(me.localAnchorLla[i] - window.rings[window.current_ring][i]);
     // }
   }
-  // for (var i = 0; i< 3; i++) {
-  //   console.log(me.localAnchorLla[i] - rings[current_ring][i]);
-  // }
 }
 
 FirstPersonCam.prototype.updateCamera = function() {
@@ -244,7 +259,7 @@ FirstPersonCam.prototype.updateCamera = function() {
   
   // Will put in a bit of a stride if the camera is at or below 1.7 meters
   var bounce = 0;  
-  if (cameraAltitude <= INITIAL_CAMERA_ALTITUDE /* 1.7 */) {
+  if (cameraAltitude <= 1.7 /* 1.7 */) {
     bounce = 1.5 * Math.abs(Math.sin(4 * me.distanceTraveled *
                                      Math.PI / 180)); 
   }
@@ -254,18 +269,19 @@ FirstPersonCam.prototype.updateCamera = function() {
   var la = ge.createLookAt('');
   la.set(me.localAnchorLla[0], me.localAnchorLla[1],
          cameraAltitude + bounce,
-         ge.ALTITUDE_RELATIVE_TO_SEA_FLOOR,
+         ge.ALTITUDE_RELATIVE_TO_GROUND,
          fixAngle(me.headingAngle * 180 / Math.PI), /* heading */         
          me.tiltAngle * 180 / Math.PI + 90, /* tilt */         
          0 /* altitude is constant */         
          );  
+
   ge.getView().setAbstractView(la);         
 };
 
 FirstPersonCam.prototype.update = function() {
   var me = this;
   
-  // ge.getWindow().blur();
+  ge.getWindow().blur();
   
   // Update delta time (dt in seconds)
   var now = (new Date()).getTime();  

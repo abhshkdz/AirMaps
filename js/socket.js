@@ -68,10 +68,9 @@ function openConnection() {
                 }
             }
             else if (data.event === 'location') {
-
                 if (window.view === 'earth') {
                     window.adr = data.location;
-                    reset();
+                    window.reset();
                 }
             }
             else if (data.event === 'switch') {

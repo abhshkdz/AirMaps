@@ -265,6 +265,42 @@ FirstPersonCam.prototype.updatePosition = function(dt, ge) {
   }
 }
 
+FirstPersonCam.prototype.newLocation = function(lat, lng) {
+  var me = this;
+  var lla = me.localAnchorLla;
+  lla[2] = ge.getGlobe().getGroundAltitude(lla[0], lla[1]); 
+
+  me.localAnchorLla[0] = lat;
+  me.localAnchorLla[1] = lng;
+  
+  // // Will put in a bit of a stride if the camera is at or below 1.7 meters
+  var bounce = 0;  
+  if (cameraAltitude <= 1.7 /* 1.7 */) {
+    bounce = 1.5 * Math.abs(Math.sin(4 * me.distanceTraveled *
+                                     Math.PI / 180)); 
+  }
+    
+  // Update camera position. Note that tilt at 0 is facing directly downwards.
+  //  We add 90 such that 90 degrees is facing forwards.
+  var la = ge.createLookAt('');
+  console.log(lat, lng)
+  la.set(lat, lng,
+         cameraAltitude + bounce,
+         ge.ALTITUDE_RELATIVE_TO_GROUND,
+         fixAngle(me.headingAngle * 180 / Math.PI), /* heading */         
+         me.tiltAngle * 180 / Math.PI + 90, /* tilt */         
+         0 /* altitude is constant */         
+         );  
+
+  // ge.getView().setAbstractView(la);  
+  // var lookAt = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
+  // lookAt.setLatitude(lat);
+  // lookAt.setLongitude(lng);
+  // me.localAnchorLla[0] = lat;
+  // me.localAnchorLla[1] = lng;
+  ge.getView().setAbstractView(lookAt);  
+}
+
 FirstPersonCam.prototype.updateCamera = function() {
   var me = this;
   var lla = me.localAnchorLla;

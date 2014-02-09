@@ -150,10 +150,14 @@ namespace Kinect.Server
         {
 
 
-            if (e.Result.Confidence >= 0.5)
+            if (e.Result.Confidence >= 0.4)
             {
                 Console.WriteLine("\nSpeech Recognized: \t{0}\tConfidence:\t{1}", e.Result.Text, e.Result.Confidence);
                 Console.WriteLine(e.Result.Text);
+                foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
+                {
+                    item.Value.Send("event=location&location="+e.Result.Text);
+                }   
             }
             else
             {

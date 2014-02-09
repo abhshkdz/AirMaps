@@ -1,29 +1,30 @@
-﻿using System;
+﻿using System;   
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Kinect;
 using Alchemy;
+using System.IO;
 using Alchemy.Classes;
 using System.Collections.Concurrent;
 using System.Threading;
-//using Microsoft.Speech.AudioFormat;
-//using Microsoft.Speech.Recognition;
+using Microsoft.Speech.AudioFormat;
+using Microsoft.Speech.Recognition;
 
 namespace Kinect.Server
 {
     class Program
     {
         //static List<IWebSocketConnection> _clients = new List<IWebSocketConnection>();
-        protected static ConcurrentDictionary<string,UserContext> OnlineConnections = new ConcurrentDictionary<string, UserContext>();
+        protected static ConcurrentDictionary<string, UserContext> OnlineConnections = new ConcurrentDictionary<string, UserContext>();
         static UserContext connecter = null;
         static bool _serverInitialized = false;
 
         static Skeleton[] _skeletons = new Skeleton[6];
-        
+
         static double walkThresh = 0.1;
         static double runThresh = 0.5;
-        static double tiltSlowThresh = 0.3;
+        static double tiltSlowThresh = 0.5;
         static double turnSlowThresh = 0.08;
         static double turnFastThresh = 0.2;
         static double armTurnThresh = 0.3;
@@ -33,10 +34,11 @@ namespace Kinect.Server
         {
             InitilizeKinect();
             InitializeServer();
-        //    SpeechRecognition();
+            SpeechRecognition();
         }
 
-  /*      private static void SpeechRecognition(){
+        private static void SpeechRecognition()
+        {
             KinectSensor sensor = (from sensorToCheck in KinectSensor.KinectSensors where sensorToCheck.Status == KinectStatus.Connected select sensorToCheck).FirstOrDefault();
             if (sensor == null)
             {
@@ -49,22 +51,22 @@ namespace Kinect.Server
                         "Press any key to continue.\n"); 
                 */
                 // Give a chance for user to see console output before it is dismissed
-    //            Console.ReadKey(true);
-     //           return;
-      //      }
+                Console.ReadKey(true);
+                return;
+            }
 
-            //sensor.Start();
+            sensor.Start();
 
             // Obtain the KinectAudioSource to do audio capture
-          //  KinectAudioSource source = sensor.AudioSource;
-          //  source.EchoCancellationMode = EchoCancellationMode.None; // No AEC for this sample
-          //  source.AutomaticGainControlEnabled = false; // Important to turn this off for speech recognition
+            KinectAudioSource source = sensor.AudioSource;
+            source.EchoCancellationMode = EchoCancellationMode.None; // No AEC for this sample
+            source.AutomaticGainControlEnabled = false; // Important to turn this off for speech recognition
 
-            //RecognizerInfo ri = GetKinectRecognizer();
+            RecognizerInfo ri = GetKinectRecognizer();
 
-            /*if (ri == null)
+            if (ri == null)
             {
-               // Console.WriteLine("Could not find Kinect speech recognizer. Please refer to the sample requirements.");
+                // Console.WriteLine("Could not find Kinect speech recognizer. Please refer to the sample requirements.");
                 return;
             }
 
@@ -74,7 +76,7 @@ namespace Kinect.Server
             {
                 var commands = new Choices();
                 commands.Add("Fly to New York");
-                commands.Add("Fly to london");
+                commands.Add("Fly to London");
                 commands.Add("Fly to New Delhi");
                 commands.Add("fly to Mumbai");
                 commands.Add("street");
@@ -84,7 +86,7 @@ namespace Kinect.Server
                 commands.Add("fly to Los Angeles");
                 commands.Add("Hello");
                 commands.Add("baby");
-                commands.Add("fly to San francisco");
+                commands.Add("fly to San Francisco");
                 commands.Add("stop");
 
                 var gb = new GrammarBuilder { Culture = ri.Culture };
@@ -105,20 +107,20 @@ namespace Kinect.Server
                     sre.SetInputToAudioStream(
                         s, new SpeechAudioFormatInfo(EncodingFormat.Pcm, 16000, 16, 1, 32000, 2, null));
 
-                   // Console.WriteLine("Recognizing speech. Say something baby :P. Press ENTER to stop");
+                    Console.WriteLine("Recognizing speech. Say something baby :P. Press ENTER to stop");
 
                     sre.RecognizeAsync(RecognizeMode.Multiple);
                     Console.ReadLine();
-                   // Console.WriteLine("Stopping recognizer ...");
+                    Console.WriteLine("Stopping recognizer ...");
                     sre.RecognizeAsyncStop();
                 }
             }
 
             sensor.Stop();
 
-        }*/
+        }
 
-        /*private static RecognizerInfo GetKinectRecognizer()
+        private static RecognizerInfo GetKinectRecognizer()
         {
             Func<RecognizerInfo, bool> matchingFunc = r =>
             {
@@ -131,7 +133,7 @@ namespace Kinect.Server
 
         private static void SreSpeechRecognitionRejected(object sender, SpeechRecognitionRejectedEventArgs e)
         {
-            /*Console.WriteLine("\nSpeech Rejected");
+            Console.WriteLine("\nSpeech Rejected");
             if (e.Result != null)
             {
                 Console.WriteLine("Incorrect Entry");
@@ -141,25 +143,25 @@ namespace Kinect.Server
 
         private static void SreSpeechHypothesized(object sender, SpeechHypothesizedEventArgs e)
         {
-           // Console.Write("\rSpeech Hypothesized: \t{0}", e.Result.Text);
+            Console.Write("\rSpeech Hypothesized: \t{0}", e.Result.Text);
         }
 
         private static void SreSpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
 
-            
-            if (e.Result.Confidence >= 0.7)
+
+            if (e.Result.Confidence >= 0.5)
             {
-               //Console.WriteLine("\nSpeech Recognized: \t{0}\tConfidence:\t{1}", e.Result.Text, e.Result.Confidence);
+                Console.WriteLine("\nSpeech Recognized: \t{0}\tConfidence:\t{1}", e.Result.Text, e.Result.Confidence);
                 Console.WriteLine(e.Result.Text);
             }
             else
             {
-               // Console.WriteLine("\nSpeech Recognized but confidence was too low: \t{0}", e.Result.Confidence);
-               // Console.WriteLine("Please try Again");
+                Console.WriteLine("\nSpeech Recognized but confidence was too low: \t{0}", e.Result.Confidence);
+                //Console.WriteLine("Please try Again");
 
             }
-        }*/
+        }
         private static void InitializeServer()
         {
             var aServer = new WebSocketServer(8181, System.Net.IPAddress.Any)
@@ -172,11 +174,10 @@ namespace Kinect.Server
             };
             aServer.Start();
             _serverInitialized = true;
-
-            Console.ReadLine();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Title = "MotionMaps WebSocket Server";
             Console.WriteLine("Running WebSocket Server ...");
+            Console.ReadLine();
         }
 
         public static void OnConnect(UserContext aContext)
@@ -185,7 +186,7 @@ namespace Kinect.Server
             Console.WriteLine("Client Connected From : " + aContext.ClientAddress.ToString());
 
             // Create a new Connection Object to save client context information
-           // var conn = new Connection { Context = aContext };
+            // var conn = new Connection { Context = aContext };
 
             // Add a connection Object to thread-safe collection
             /*for (int i = 0; i < 100; i++)
@@ -193,7 +194,7 @@ namespace Kinect.Server
             {
                 aContext.Send("");
             }/* */
-             
+
             OnlineConnections.TryAdd(aContext.ClientAddress.ToString(), aContext);
             //connecter = aContext;
         }
@@ -272,7 +273,6 @@ namespace Kinect.Server
             // Detect gestures
             detectWalking(rightFoot, leftFoot);
             detectShoulderTurning(rightShoulder, leftShoulder);
-            detectArmMovement(rightHand, rightShoulder);
             detectRightHandUp(rightHand, head);
             detectBothHandsUp(rightHand, leftHand, head);
         }
@@ -317,7 +317,7 @@ namespace Kinect.Server
                 //LOOK DOWN
                 foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
                 {
-                    item.Value.Send("{\"event\":\"altitude\",\"direction\":\"down\"}");
+                    item.Value.Send("event=altitude&direction=down");
                 }
                 Console.WriteLine("LOOK DOWN!");
             }
@@ -325,7 +325,7 @@ namespace Kinect.Server
             {
                 foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
                 {
-                    item.Value.Send("{\"event\":\"altitude\",\"direction\":\"up\"}");
+                    item.Value.Send("event=altitude&direction=up");
                 }
                 Console.WriteLine("LOOK UP!");
             }
@@ -344,7 +344,7 @@ namespace Kinect.Server
                 //TURN LEFT
                 foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
                 {
-                    item.Value.Send("{\"event\":\"turn\",\"direction\":\"left\"}");
+                    item.Value.Send("event=turn&direction=left");
                 }
                 Console.WriteLine("LEFT!");
             }
@@ -353,7 +353,7 @@ namespace Kinect.Server
                 //TURN RIGHT
                 foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
                 {
-                    item.Value.Send("{\"event\":\"turn\",\"direction\":\"right\"}");
+                    item.Value.Send("event=turn&direction=right");
                 }
                 Console.WriteLine("RIGHT!");
             }
@@ -373,7 +373,7 @@ namespace Kinect.Server
             {
                 foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
                 {
-                    item.Value.Send("{\"event\":\"decelerate\",\"multiplier\":\"" + feetDifferential + "\"}");
+                    item.Value.Send("event=decelerate&multiplier=" + feetDifferential);
                 }
                 Console.WriteLine("BACK!");
             }
@@ -382,7 +382,7 @@ namespace Kinect.Server
             {
                 foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
                 {
-                    item.Value.Send("{\"event\":\"accelerate\",\"multiplier\":\"" + (-feetDifferential) + "\"}");
+                    item.Value.Send("event=accelerate&multiplier=" + (-feetDifferential));
                 }
                 Console.WriteLine("FORWARD!");
             }
@@ -422,10 +422,10 @@ namespace Kinect.Server
                             processSkeletonFrame(skeleton);
                         }
 
-                        //foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
-                        //{
-                        //    item.Value.Send(json);
-                        //}
+                        foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
+                        {
+                            item.Value.Send(json);
+                        }
                     }
                 }
             }

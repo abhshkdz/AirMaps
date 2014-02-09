@@ -9,9 +9,9 @@ strafeLeft = false;
 strafeRight = false;
 altitudeUp = false;
 altitudeDown = false;
-speeds = {
+window.speeds = {
   turnSpeed: 60.0,
-  tiltSpeed: 60.0,
+  tiltSpeed: 300.0,
   strafeVelocity: 30.0,
   forwardVelocity: 100
 }; 
@@ -22,14 +22,14 @@ INITIAL_CAMERA_ALTITUDE = 200; // Roughly 6 feet tall
 cameraAltitude = INITIAL_CAMERA_ALTITUDE;
 
 function changeSpeed(multiplier) {
-  speeds.turnSpeed *= multiplier;
-  speeds.tiltSpeed *= multiplier;
-  speeds.strafeVelocity *= multiplier;
-  speeds.forwardVelocity *= multiplier;
+  // window.speeds.turnSpeed *= multiplier;
+  // window.speeds.tiltSpeed *= multiplier;
+  // window.speeds.strafeVelocity *= multiplier;
+  window.speeds.forwardVelocity *= multiplier;
 }
 
 function initSpeed() {
-  speeds = {
+  window.speeds = {
     turnSpeed: 45.0,
     tiltSpeed: 60.0,
     strafeVelocity: 30.0,
@@ -170,13 +170,13 @@ FirstPersonCam.prototype.updateOrientation = function(dt) {
 
   // Based on dt and input press, update turn angle.
   if (turnLeft || turnRight) {  
-    var turnSpeed = speeds.turnSpeed; // radians/sec
+    var turnSpeed = window.speeds.turnSpeed; // radians/sec
     if (turnLeft)
       turnSpeed *= -1.0;
     me.headingAngle += turnSpeed * dt * Math.PI / 180.0;
   }
   if (tiltUp || tiltDown) {
-    var tiltSpeed = speeds.tiltSpeed; // radians/sec
+    var tiltSpeed = window.speeds.tiltSpeed; // radians/sec
     if (tiltDown)
       tiltSpeed *= -1.0;
     me.tiltAngle = me.tiltAngle + tiltSpeed * dt * Math.PI / 180.0;
@@ -224,14 +224,14 @@ FirstPersonCam.prototype.updatePosition = function(dt, ge) {
   // Calculate strafe/forwards                              
   var strafe = 0;                             
   if (strafeLeft || strafeRight) {
-    var strafeVelocity = speeds.strafeVelocity;
+    var strafeVelocity = window.speeds.strafeVelocity;
     if (strafeLeft)
       strafeVelocity *= -1;      
     strafe = strafeVelocity * dt;
   }  
   var forward = 0;                             
   if (moveForward || moveBackward) {
-    var forwardVelocity = speeds.forwardVelocity;
+    var forwardVelocity = window.speeds.forwardVelocity;
     if (moveBackward)
       forwardVelocity *= -1;      
     forward = forwardVelocity * dt;

@@ -13,7 +13,6 @@
 </head>
 <body onload="init()" onkeydown="return keyDown(event)" onkeyup="return keyUp(event)" id="body" cz-shortcut-listen="true">
 	<div id="map3d"></div>
-	<div id="street"><h1 class="white-heading">Street view!</h1><br><img id="main-img" src=""></div>
 	<script type="text/javascript">
 		google.load("earth", "1");
 		google.load("maps", "2");
@@ -25,9 +24,7 @@
 			window.adr = 'San Fransisco';
 			window.total_count = 10;
 			window.view = 'earth';
-			window.streetimg = document.getElementById('main-img');
 		  google.earth.createInstance("map3d", initCB, failureCB);
-
 		}
 
 		function initCB(object) {
@@ -37,7 +34,7 @@
 			var address = window.adr;
 			<?php
 				if(!isset($_GET['lat'])) { 
-					?>
+			?>
 					$.ajax({
 					  url:"http://maps.googleapis.com/maps/api/geocode/json?address="+address+"&sensor=false",
 					  type: "POST",
@@ -55,7 +52,7 @@
 						  	}
 						  });
 						  cam.updateCamera();
-			        // openConnection();
+			        openConnection();
 						  ge.getWindow().setVisibility(true);
 						  // generateCheckpoint(ge, lat, lng, 100);
 						  keyboardFocusHack(ge);

@@ -30,7 +30,7 @@ function changeSpeed(multiplier) {
 
 function initSpeed() {
   speeds = {
-    turnSpeed: 60.0,
+    turnSpeed: 45.0,
     tiltSpeed: 60.0,
     strafeVelocity: 30.0,
     forwardVelocity: 100

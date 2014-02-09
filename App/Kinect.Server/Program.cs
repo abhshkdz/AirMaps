@@ -23,7 +23,7 @@ namespace Kinect.Server
         
         static double walkThresh = 0.1;
         static double runThresh = 0.5;
-        static double tiltSlowThresh = 0.5;
+        static double tiltSlowThresh = 0.3;
         static double turnSlowThresh = 0.08;
         static double turnFastThresh = 0.2;
         static double armTurnThresh = 0.3;
@@ -285,7 +285,7 @@ namespace Kinect.Server
                 //STOP ALL MOTION
                 foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
                 {
-                    item.Value.Send("event=stop");
+                    item.Value.Send("{\"event\":\"stop\"}");
                 }
                 Console.WriteLine("STOP ALL MOTION BHENCHOD!");
             }
@@ -300,7 +300,7 @@ namespace Kinect.Server
                 //LOOK DOWN
                 foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
                 {
-                    item.Value.Send("event=altitude&direction=down");
+                    item.Value.Send("{\"event\":\"altitude\",\"direction\":\"down\"}");
                 }
                 Console.WriteLine("LOOK DOWN!");
             }
@@ -308,7 +308,7 @@ namespace Kinect.Server
             {
                 foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
                 {
-                    item.Value.Send("event=altitude&direction=up");
+                    item.Value.Send("{\"event\":\"altitude\",\"direction\":\"up\"}");
                 }
                 Console.WriteLine("LOOK UP!");
             }
@@ -327,7 +327,7 @@ namespace Kinect.Server
                 //TURN LEFT
                 foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
                 {
-                    item.Value.Send("event=turn&direction=left");
+                    item.Value.Send("{\"event\":\"turn\",\"direction\":\"left\"}");
                 }
                 Console.WriteLine("LEFT!");
             }
@@ -336,7 +336,7 @@ namespace Kinect.Server
                 //TURN RIGHT
                 foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
                 {
-                    item.Value.Send("event=turn&direction=right");
+                    item.Value.Send("{\"event\":\"turn\",\"direction\":\"right\"}");
                 }
                 Console.WriteLine("RIGHT!");
             }
@@ -356,7 +356,7 @@ namespace Kinect.Server
             {
                 foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
                 {
-                    item.Value.Send("event=decelerate&multiplier=" + feetDifferential);
+                    item.Value.Send("{\"event\":\"decelerate\",\"multiplier\":\"" + feetDifferential + "\"}");
                 }
                 Console.WriteLine("BACK!");
             }
@@ -365,7 +365,7 @@ namespace Kinect.Server
             {
                 foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
                 {
-                    item.Value.Send("event=accelerate&multiplier=" + (-feetDifferential));
+                    item.Value.Send("{\"event\":\"accelerate\",\"multiplier\":\"" + (-feetDifferential) + "\"}");
                 }
                 Console.WriteLine("FORWARD!");
             }
@@ -405,10 +405,10 @@ namespace Kinect.Server
                             processSkeletonFrame(skeleton);
                         }
 
-                        foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
-                        {
-                            item.Value.Send(json);
-                        }
+                        //foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
+                        //{
+                        //    item.Value.Send(json);
+                        //}
                     }
                 }
             }

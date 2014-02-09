@@ -1,6 +1,22 @@
 window.rings = [];
 window.current_ring = 0;
 
+var generatePlace = function (ge, Lat, Lng, name) {
+	var checkPoint = ge.createPlacemark('');
+	checkPoint.setName(name);
+  var point = ge.createPoint('');
+  point.setLatitude(lat);
+  point.setLongitude(lng);
+  checkPoint.setGeometry(point);
+  var icon = ge.createIcon('');
+	icon.setHref('http://maps.google.com/mapfiles/kml/paddle/red-circle.png');
+  var style = ge.createStyle('');
+	style.getIconStyle().setIcon(icon);	
+	style.getIconStyle().setScale(2.0);
+	checkPoint.setStyleSelector(style);
+  ge.getFeatures().appendChild(checkPoint);
+};
+
 var generateCheckpoint = function (ge, lat, lng, alt) {
   var checkPoint = ge.createPlacemark('');
   checkPoint.setName("Testing here");

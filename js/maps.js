@@ -1,7 +1,7 @@
 var getNearbyPlaces = function (latitude, longitude, cb) {
 	var key = "AIzaSyAnBfpbJGNiAlh5TFu-V5UHglUEgK8DbzY";
 	$.ajax({
-	  url:"/airsurf/request.php?lat="+ latitude + "&lng=" + longitude + "&key="+key,
+	  url:"request.php?lat="+ latitude + "&lng=" + longitude + "&key="+key,
 	  type: "GET",
 	  dataType: 'json',
 	  success: function(res){

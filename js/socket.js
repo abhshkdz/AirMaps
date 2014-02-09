@@ -55,19 +55,7 @@ function openConnection() {
                 }
             }
             else if (data.event === 'switch') {
-                if (window.view === 'earth') {
-                    window.view = 'street';
-                    changeSpeed(0);
-                    window.streetimg.src = 'http://maps.googleapis.com/maps/api/streetview?size=400x400&location=' + window.lat + ',' + window.lng + '-73.988354&fov=90&heading=0&pitch=10&sensor=false';
-                    window.imgheading = 0;
-                    //@das: insert
-                    // scroll to top
-                } else {
-                    window.view = 'earth';
-                    initSpeed();
-                    //@das: insert
-                    // scroll to bottom
-                }
+                window.location.href ='streetview.php?lat=' + window.lat + '&lng=' + window.lng;
             }
         };
 

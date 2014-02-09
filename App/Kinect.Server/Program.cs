@@ -7,8 +7,8 @@ using Alchemy;
 using Alchemy.Classes;
 using System.Collections.Concurrent;
 using System.Threading;
-using Microsoft.Speech.AudioFormat;
-using Microsoft.Speech.Recognition;
+//using Microsoft.Speech.AudioFormat;
+//using Microsoft.Speech.Recognition;
 
 namespace Kinect.Server
 {
@@ -33,10 +33,10 @@ namespace Kinect.Server
         {
             InitilizeKinect();
             InitializeServer();
-            SpeechRecognition();
+        //    SpeechRecognition();
         }
 
-        private static void SpeechRecognition(){
+  /*      private static void SpeechRecognition(){
             KinectSensor sensor = (from sensorToCheck in KinectSensor.KinectSensors where sensorToCheck.Status == KinectStatus.Connected select sensorToCheck).FirstOrDefault();
             if (sensor == null)
             {
@@ -49,20 +49,20 @@ namespace Kinect.Server
                         "Press any key to continue.\n"); 
                 */
                 // Give a chance for user to see console output before it is dismissed
-                Console.ReadKey(true);
-                return;
-            }
+    //            Console.ReadKey(true);
+     //           return;
+      //      }
 
-            sensor.Start();
+            //sensor.Start();
 
             // Obtain the KinectAudioSource to do audio capture
-            KinectAudioSource source = sensor.AudioSource;
-            source.EchoCancellationMode = EchoCancellationMode.None; // No AEC for this sample
-            source.AutomaticGainControlEnabled = false; // Important to turn this off for speech recognition
+          //  KinectAudioSource source = sensor.AudioSource;
+          //  source.EchoCancellationMode = EchoCancellationMode.None; // No AEC for this sample
+          //  source.AutomaticGainControlEnabled = false; // Important to turn this off for speech recognition
 
-            RecognizerInfo ri = GetKinectRecognizer();
+            //RecognizerInfo ri = GetKinectRecognizer();
 
-            if (ri == null)
+            /*if (ri == null)
             {
                // Console.WriteLine("Could not find Kinect speech recognizer. Please refer to the sample requirements.");
                 return;
@@ -116,9 +116,9 @@ namespace Kinect.Server
 
             sensor.Stop();
 
-        }
+        }*/
 
-        private static RecognizerInfo GetKinectRecognizer()
+        /*private static RecognizerInfo GetKinectRecognizer()
         {
             Func<RecognizerInfo, bool> matchingFunc = r =>
             {
@@ -136,7 +136,7 @@ namespace Kinect.Server
             {
                 Console.WriteLine("Incorrect Entry");
 
-            }*/
+            }
         }
 
         private static void SreSpeechHypothesized(object sender, SpeechHypothesizedEventArgs e)
@@ -159,7 +159,7 @@ namespace Kinect.Server
                // Console.WriteLine("Please try Again");
 
             }
-        }
+        }*/
         private static void InitializeServer()
         {
             var aServer = new WebSocketServer(8181, System.Net.IPAddress.Any)
@@ -273,10 +273,11 @@ namespace Kinect.Server
             detectWalking(rightFoot, leftFoot);
             detectShoulderTurning(rightShoulder, leftShoulder);
             detectArmMovement(rightHand, rightShoulder);
+            detectRightHandUp(rightHand, head);
             detectBothHandsUp(rightHand, leftHand, head);
         }
 
-        private static void detectBothHandsUp(Joint rightHand, Joint leftHand, Joint head)
+        private static void detectRightHandUp(Joint rightHand, Joint head)
         {
             double rightHandHeightDiffY = rightHand.Position.Y - head.Position.Y;
 
@@ -285,9 +286,25 @@ namespace Kinect.Server
                 //STOP ALL MOTION
                 foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
                 {
-                    item.Value.Send("{\"event\":\"stop\"}");
+                    item.Value.Send("{\"event\":\"switch\"}");
                 }
-                Console.WriteLine("STOP ALL MOTION BHENCHOD!");
+                Console.WriteLine("SWITCH");
+            }
+        }
+
+        private static void detectBothHandsUp(Joint rightHand, Joint leftHand, Joint head)
+        {
+            double rightHandHeightDiffY = rightHand.Position.Y - head.Position.Y;
+            double leftHandHeightDiffY = leftHand.Position.Y - head.Position.Y;
+
+            if (rightHandHeightDiffY > stopThreshold && leftHandHeightDiffY > stopThreshold)
+            {
+                //STOP ALL MOTION
+                foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
+                {
+                    item.Value.Send("{\"event\":\"fly\"}");
+                }
+                Console.WriteLine("BOTH HANDS UP");
             }
         }
 

@@ -85,6 +85,13 @@
 							delete cam;
 						  cam = new FirstPersonCam(lat, lng);
 						  cam.updateCamera();
+						  $("#city").text("You are at "+address+" city");
+			        		getTweets(address,function(tweets){
+			        			$("#tweets").text("");
+			        			for(var i in tweets){
+			        				$("#tweets").append("<div class='tweet'>"+tweet[i].text+"</div>");
+			        			}
+			        		})
 						  getNearbyPlaces(lat, lng, function (nearby) {
 						  	for (var i in nearby) {
 						  		var place = nearby[i];

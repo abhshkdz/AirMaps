@@ -1,4 +1,4 @@
-﻿using System;   
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,7 +48,7 @@ namespace Kinect.Server
                         "Attach the KinectSensor and restart this application.\n" +
                         "If that doesn't work run SkeletonViewer-WPF to better understand the Status of\n" +
                         "the Kinect sensors.\n\n" +
-                        "Press any key to continue.\n"); 
+                        "Press any key to continue.\n");
                 */
                 // Give a chance for user to see console output before it is dismissed
                 Console.ReadKey(true);
@@ -91,7 +91,7 @@ namespace Kinect.Server
 
                 var gb = new GrammarBuilder { Culture = ri.Culture };
 
-                // Specify the culture to match the recognizer in case we are running in a different culture.                                 
+                // Specify the culture to match the recognizer in case we are running in a different culture.
                 gb.Append(commands);
 
                 // Create the actual Grammar instance, and then load it into the speech recognizer.
@@ -157,7 +157,7 @@ namespace Kinect.Server
                 foreach (KeyValuePair<string, UserContext> item in OnlineConnections)
                 {
                     item.Value.Send("event=location&location="+e.Result.Text);
-                }   
+                }
             }
             else
             {
@@ -179,7 +179,7 @@ namespace Kinect.Server
             aServer.Start();
             _serverInitialized = true;
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Title = "MotionMaps WebSocket Server";
+            Console.Title = "Air Maps WebSocket Server";
             Console.WriteLine("Running WebSocket Server ...");
             Console.ReadLine();
         }

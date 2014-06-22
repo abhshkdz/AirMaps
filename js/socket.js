@@ -1,3 +1,7 @@
+(function () {
+
+});
+
 function openConnection() {
     // uses global 'conn' object
     if (conn.readyState === undefined || conn.readyState > 1) {
@@ -32,8 +36,8 @@ function openConnection() {
             else if (data.event === 'decelerate') {
                 turnLeft = false;
                 turnRight = false;
-                                        altitudeUp = false;
-                        altitudeDown = false;
+                altitudeUp = false;
+                altitudeDown = false;
                 if (window.view === 'earth') {
                     changeSpeed(data.multiplier);
                 }
@@ -87,8 +91,6 @@ function openConnection() {
 
         conn.onclose = function (event) {
             alert("Web Socket Closed");
-
-
 
         };
     }

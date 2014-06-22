@@ -17,12 +17,12 @@
 }
 
 #main-img {
-	
+
 }
 #data{
-		position:absolute;
-		right: 0;
-		top:0;
+	position:absolute;
+	right: 0;
+	top:0;
 	width: 20%;
 	height: 1000px;
 
@@ -44,5 +44,4 @@
 	font-size: 20px;
 	font-weight: bold;
 }
-/* @das: insert
-	css */
+

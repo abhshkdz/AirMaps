@@ -19,7 +19,7 @@
     turnRight: false,
     tiltUp: false,
     tiltDown: false,
-    moveForward: true,
+    moveForward: false,
     moveBackward: false,
     strafeLeft: false,
     strafeRight: false,

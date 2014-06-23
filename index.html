@@ -15,10 +15,14 @@
   <link rel="stylesheet" href="css/airmaps.css">
 </head>
 <body onload="airmaps.init()" id="body" onkeydown="return airmaps.camera.keyDown(event)" onkeyup="return airmaps.camera.keyUp(event)" cz-shortcut-listen="true">
-  <div id="map3d" style="width: 80%; float: left;"></div>
-  <div id="social" style="width: 20%; float: left;">
-    <div id="city"></div>
-    <div id="feed">Loading...</div>
+  <div id="map3d" style="width: 70%; float: left;"></div>
+  <div id="side" style="width: 30%; height: 1000px; float: left; background: rgba(0, 0, 0, 0.1);">
+    <div id="city" style="box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1); width: 100%; padding-bottom: 10px; padding-top: 10px; background: #ffffff; color: #777; text-align: center; font-size: 32px">San Fransisco</div>
+    <div id="side-info">
+      <div id="street" class="side" style="display: none;"><p>Street goes here</p></div>
+      <div id="social" class="side" style="display: none;"><p>Social goes here</p></div>
+      <div id="maps" class="side" style="display: none;"><p>Place info goes here</p></div>
+    </div>
   </div>
   <script>
     google.load('earth', '1');

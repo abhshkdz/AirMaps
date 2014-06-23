@@ -4,6 +4,8 @@
   var social = social || {};
 
   social.init = function (address) {
+    $('.side').css('display', 'none');
+    $('#social').css('display', 'block');
     this._address = address;
     // this._fetchFeed(this._renderFeed);
   };

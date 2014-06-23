@@ -53,6 +53,23 @@
     });
   };
 
+  maps.generatePlace = function (place) {
+    var checkpoint = airmaps.ge.createPlacemark('');
+    var point      = airmaps.ge.createPoint('');
+    var icon       = airmaps.ge.createIcon('');
+    var style      = airmaps.ge.createStyle('');
+
+    icon.setHref(place.icon);
+    checkpoint.setName(place.name);
+    point.setLatitude(place.lat);
+    point.setLongitude(place.lng);
+    checkpoint.setGeometry(point);
+    style.getIconStyle().setIcon(icon);
+    style.getIconStyle().setScale(2.0);
+    checkpoint.setStyleSelector(style);
+    airmaps.ge.getFeatures().appendChild(checkpoint);
+  };
+
   airmaps.maps = maps;
 
 })(airmaps);

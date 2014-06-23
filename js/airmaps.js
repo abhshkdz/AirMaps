@@ -6,16 +6,18 @@
   airmaps.initCity = function () {
     var _this = this;
 
+    $('#city').html(this.address);
+
     this.maps.getCoordinates(this.address, function (position) {
       console.log('position obtained: ' + position.lat + ', ' + position.lng);
       _this.position = position;
       _this.camera.init(position.lat, position.lng);
-      // _this.camera.fly(position);
       _this.maps.getNearbyPlaces(position, function (nearby) {
         for (var i in nearby) {
           var place = nearby[i];
-          // _this.maps.generatePlace(_this.earth, place);
+          _this.maps.generatePlace(place);
         }
+        console.log('places generated');
       });
     });
 
@@ -25,6 +27,7 @@
   airmaps.init = function (address) {
     if (typeof address === 'undefined') address = 'New York';
 
+    this.address = address;
     google.earth.createInstance('map3d', function (object) {
       var ge = object;
 

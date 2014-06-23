@@ -1,97 +1,61 @@
-(function () {
+(function (airmaps) {
+  'use strict';
 
-});
+  var socket = socket || {};
 
-function openConnection() {
-    // uses global 'conn' object
-    if (conn.readyState === undefined || conn.readyState > 1) {
+  socket.init = function (url) {
+    var WebSocket = window.WebSocket || window.mozWebSocket;
 
-        conn = new WebSocket('ws://172.17.6.68:8181');
+    this._connection = new WebSocket(url);
 
-        conn.onopen = function () {
-            conn.send("Connection Established Confirmation");
-            console.log("Hello!");
-        };
+    this._connection.onopen = function () {
+      // Handle initial connection here
+      socket.connection.send('Connection Established Confirmation');
+    };
 
+    this._connection.onmessage = function (event) {
+      // Handle main logic here
+      var data;
 
-        conn.onmessage = function (event) {
-            console.log(event.data);
-            var data = JSON.parse(event.data);
-            if (data.event === 'accelerate') {
-                turnLeft = false;
-                turnRight = false;
-                                        altitudeUp = false;
-                        altitudeDown = false;
-                if (window.view === 'earth') {
-                    if(window.speeds.strafeVelocity === 0) {
-                        initSpeed();
-                    } else {
-                        changeSpeed(10 * data.multiplier);
-                    }
-                    if(window.speeds.forwardVelocity > 500) {
-                        window.speeds.forwardVelocity = 500.0;
-                    }
-                }
-            }
-            else if (data.event === 'decelerate') {
-                turnLeft = false;
-                turnRight = false;
-                altitudeUp = false;
-                altitudeDown = false;
-                if (window.view === 'earth') {
-                    changeSpeed(data.multiplier);
-                }
-                if (window.speeds.forwardVelocity < 15) {
-                    initSpeed();
-                }
-            }
-            else if (data.event === 'turn') {
-                altitudeUp = false;
-                altitudeDown = false;
-                if (window.view === 'earth') {
-                    if (data.direction === 'left') {
-                        turnLeft = true;
-                        turnRight = false;
-                    } else if (data.direction === 'right') {
-                        turnLeft = false;
-                        turnRight = true;
-                    }
-                }
-            }
-            else if (data.event === 'altitude') {
-                turnLeft = false;
-                turnRight = false;
-                if (window.view === 'earth') {
-                    if (data.direction === 'up') {
-                        altitudeUp = true;
-                        altitudeDown = false;
-                    } else if (data.direction === 'down') {
-                        altitudeUp = false;
-                        altitudeDown = true;
-                    }
-                }
-            }
-            else if (data.event === 'location') {
-                if (window.view === 'earth') {
-                    var l = data.location.substring(7);
-                    console.log(l);
-                    window.adr = l;
-                    window.reset();
-                }
-            }
-            else if (data.event === 'switch') {
-                window.location.href ='streetview.php?lat=' + window.lat + '&lng=' + window.lng;
-            }
-        };
+      if (typeof event.data === 'object') {
+        data = event.data;
+      } else {
+        data = JSON.parse(event.data);
+      }
 
-        conn.onerror = function (event) {
-            alert("Web Socket Error");
-        };
+      if (data.event === 'accelerate') {
+        airmaps.camera.changeSpeed(data.multiplier);
+      }
 
+      if (data.event === 'decelerate') {
+        airmaps.camera.changeSpeed(data.multiplier);
+      }
 
-        conn.onclose = function (event) {
-            alert("Web Socket Closed");
+      if (data.event === 'turn' || data.event === 'altitude') {
+        airmaps.camera.turn(data.direction);
+      }
 
-        };
-    }
-}
+      if (data.event === 'location') {
+        airmaps.address = data.location.substring(7);
+        airmaps.initCity();
+      }
+
+      if (data.event === 'switch') {
+        airmaps.camera.change();
+      }
+    };
+
+    this._connection.onerror = function (event) {
+      // Handle error events here
+      alert('Web socket error');
+    };
+
+    this._connection.onclose = function (event) {
+      // Handle close event here
+      alert('Web socket closed');
+    };
+  };
+
+  airmaps.socket = socket;
+
+})(airmaps);

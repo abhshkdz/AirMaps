@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <title>Air Maps</title>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <script src="https://www.google.com/jsapi"></script>
+  <script src="js/vendor/jquery.min.js"></script>
+  <script src="js/vendor/math.js"></script>
+  <script src="js/airmaps.js"></script>
+  <script src="js/maps.js"></script>
+  <script src="js/social.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/socket.js"></script>
+  <link rel="stylesheet" href="css/airmaps.css">
+</head>
+<body onload="airmaps.init()" id="body" onkeydown="return airmaps.camera.keyDown(event)" onkeyup="return airmaps.camera.keyUp(event)" cz-shortcut-listen="true">
+  <div id="map3d" style="width: 80%; float: left;"></div>
+  <div id="social" style="width: 20%; float: left;">
+    <div id="city"></div>
+    <div id="feed">Loading...</div>
+  </div>
+  <script>
+    google.load('earth', '1');
+  </script>
+</body>
+</html>
